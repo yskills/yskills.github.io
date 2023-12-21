@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+
+	<title>Studienarbeit Circuit</title>
+	<style>
+	h1 {color: chartreuse;}
+	body {background-color: black;}
+    	p {color: chartreuse;}
+    	</style>
+	
+</head>
+
+<body>
+<!--Ueberschrift-->
+	<h1>Ueberschrift</h1>
+<!--Iframe-->
+	<iframe id="circuitframe"
+	width=100% height= 500
+	style="border:none;"
+	src="file:///C:/Users/yihang/Documents/DHBW%20Mannheim/Studienarbeit/circuitJS/circuitJS/circuitjs.html"></iframe>
+	<p>Weiterer Test</p>
+
+<!--Start und Stopknoepfe-->
+
+	<button onclick="sim.setSimRunning(true)">Start
+	</button>
+	<button type="button" class="topButton-red"     onclick="sim.setSimRunning(false)">Run&nbsp;/&nbsp;
+   	<strong>STOP</strong> 
+	</button>
+
+<!--Hochpass- und Tiefpassfilter-->
+
+   	<p>
+    
+    	<br>
+    	Wählen sie die Filterart aus.
+    	</p>
+    	<button onclick="">
+    	Hochpassfilter
+    	</button>   
+    	<button onclick="">
+    	Tiefpassfilter
+    	</button>
+    
+<!--Frequenz und Amplitude-->
+
+	<p>
+	extsin frequency:
+	<input id="freq" value="10" />
+    <br>
+	extsin amplitude:
+	<input id="ampl" value="10" />
+	<div id="info"></div>
+    
+    
+<script>
+
+</script>
+    
+    
+<noscript>
+	Seems like your Device doesn't support Java Script
+</noscript>
+</body>
+</html> 

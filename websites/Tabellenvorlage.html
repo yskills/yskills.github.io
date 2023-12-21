@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <!--Standardzeug-->
+        <!--Title and metainformation-->
+        <title>Tabellenvorlage</title>
+        <meta charset="utf-8"/>
+        <!--Handyansicht bzw. andere Geraete-->
+        <meta name="viewport" style="text-align: center" content="width=100%, initial-scale=1.0" />
+ 
+     <!--(If a Stylesheet is used)-->
+     <!--This is the styling part of the page the file ".css" hast to be in the same folder-->
+     <!--An alternativ way is to put the whole path of the css-file in the href-attribute-->
+        
+    <style>
+
+        /*Body, headings and Text-Elements*/
+
+        body{
+            background-color: rgb(45, 45, 45);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        h1{
+            color: turquoise;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            text-decoration: underline;
+            text-underline-position: below;
+            text-align: center;
+        }
+        
+        p{
+            color: turquoise;
+        }
+
+        /*Table, cells and rows*/
+
+        table{
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            height: 70%;
+            text-align:center;
+        }       
+        img {/*Images (more likely icons)*/
+            
+            width: 30px;
+            height: 30px;
+            
+        }
+
+
+        .cells{
+            box-sizing: border-box;
+            height:70px;
+            width:210px;
+        }
+
+        .cells:hover {
+            background-color: black;
+        }
+
+        th{ /*Table Heading (first row of the table)*/
+            border: 2px solid #000;
+            background-color: rgb(89, 89, 89);
+            font-size: 18px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        td{ /*Table body*/
+            border: 1px solid #000;
+            background-color: rgb(128, 128, 128);
+            font-size: 16px;
+        }
+
+    /*Inputfield*/
+        .InputField{
+            background-color: rgba(255, 255, 255, 0.716);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: inherit;
+            width: 10%;
+            height: 10%;
+            text-align: center;
+            color: chartreuse;
+            resize: none;
+        }   
+
+        .InputField:focus{
+            background-color: rgb(45, 45, 45);
+        }
+
+
+        /*Styling part for the Inputboxes and their headers (Reihen und Spalten)*/
+        .IndexDiv{
+            
+
+        }
+
+        label{
+            color:turquoise;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            position: aboslute;
+            
+        }
+        .IndexInput{
+
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            background-color: white;
+            background-repeat: no-repeat;
+            width: fit-content;
+            padding: 7px 2px;
+            margin: 5px;
+            transition: 0.3s padding ease-in-out;
+        }
+
+        .IndexInput:focus {
+        padding: 10px;
+        
+        }
+
+        /*Buttons*/
+
+
+        .addbutton{
+
+            border: none;
+            background-color: transparent;
+            padding: 2px;
+            
+            
+        }
+
+        .addbutton:hover{
+            background-color: #555555;;
+        }
+
+        .deletebutton{
+
+            border: none;
+            background-color: transparent;
+            padding: 2px;
+        
+        }
+        .deletebutton:hover{
+            background-color: #555555;
+        }
+
+        .button{
+            background-color: transparent;
+            border-color: transparent;
+            width: 90px;
+            height: 50px;
+        }
+
+        .button:hover {
+
+            background-color: #555555;
+           
+            width: 90px;
+            height: 50px;
+        }
+
+        #NormalButtonDiv{
+
+            margin-bottom: 10px;
+            margin-top: 5px;
+        }
+
+        #DivRow{
+            float: left;
+        }
+        #DivColumn{
+            
+            float: right;
+        }
+
+        #ParentDiv{
+        }
+    
+    /*<link rel="stylesheet" href="">*/
+    </style>
+
+    <!--Includes jQuery Lib-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head> 
+
+    <!--Body-Part begins the visible part of the website-->
+
+    <body>
+        <!--Header and text-->
+
+        <h1>Tabellenvorlage</h1>
+        <p>Vorlage für zuküntige Tabellencodes</p>
+
+        <!--Input for rows and columns-->
+        <div class="IndexDiv">
+            <label>Reihen</label>
+            <div>
+            <input type="number" class="IndexInput" type="text" id="RowIndex" placeholder="Anzahl der Reihen..."></input>
+            </div>
+        </div>
+        <div class="IndexDiv">
+            <label>Spalten</label>
+            <div>
+            <input type="number" class="IndexInput" type="text" id="ColumnIndex" placeholder="Anzahl der Spalten..."></input>
+            </div>
+        </div>
+
+        <!--Buttons-->
+
+        <div id="NormalButtonDiv">
+            <button id="SubmitButton" class="button" onclick="submitten()"><img src="https://cdn3.iconfinder.com/data/icons/basic-ui-39/16/07_sign_in-enter-log_in-1024.png"></button>
+            <button id="DeleteButton" class="button" onclick="deletetable()"><img src="https://cdn-icons-png.flaticon.com/512/6861/6861362.png"></button>
+        </div>
+
+        
+        
+        <script>
+                
+            //Global variables
+
+            var cell;                           //help to find the active cell on the table                 
+            var RowNr = 0;                      //saves the numbers of rows in the table
+            var ColumnNr = 0;                   //same but with columns
+            var TableHeadExist = 0;                 //variable to see if a header Exist
+
+
+            //Local Storage variables in case of reloading or closing the page these variables are still saved in the browser
+            if(localStorage.getItem('SavedTableHeadExist') != null){
+            TableHeadExist = localStorage.getItem('SavedTableHeadExist');
+            }
+            var savedparent = localStorage.getItem('table');
+            var savedrownr = localStorage.getItem('SavedRowNr');    
+            var savedcolumnnr = localStorage.getItem('SavedColumnNr');   
+    
+         
+            
+
+            //create table with head and body and append it to the body of the document
+
+            let table = document.createElement('table');
+            table.setAttribute("id","maintable")
+            let thead = document.createElement('thead');
+            thead.setAttribute("id","TableHead");
+            let tbody = document.createElement('tbody');
+            tbody.setAttribute("id", "TableBody");
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            var ParentDiv = document.createElement("Div");          //create a div around the table
+            ParentDiv.id = "ParentDiv";
+            
+
+            //Buttons for Rows and Columns
+            
+            var DivRow = document.createElement("div");
+            DivRow.setAttribute("id","DivRow");
+            var DivColumn= document.createElement("div");
+            DivColumn.setAttribute("id","DivColumn");
+
+            var AddRowButton = document.createElement("button");
+            AddRowButton.setAttribute("id","AddRowButton");
+            AddRowButton.setAttribute("class","addbutton");
+            AddRowButton.setAttribute("value","Add Row");
+            AddRowButton.setAttribute("onclick","addrow()");
+            AddRowButton.innerHTML = "<img src=\"https://cdn-icons-png.flaticon.com/512/148/148764.png\"></img>";
+            
+
+
+            var DeleteRowButton = document.createElement("button");
+            DeleteRowButton.setAttribute("id","DeleteRowButton");
+            DeleteRowButton.setAttribute("class","deletebutton");
+            DeleteRowButton.setAttribute("onclick","deleterow()");
+            DeleteRowButton.innerHTML = "<img src=\"https://cdn4.iconfinder.com/data/icons/essentials-72/24/039_-_Cross-1024.png\">";
+
+            
+
+            var AddColumnButton = document.createElement("button");
+            AddColumnButton.setAttribute("id","AddColumnButton");
+            AddColumnButton.setAttribute("class","addbutton");
+            AddColumnButton.setAttribute("onclick","addcolumn()");
+            AddColumnButton.innerHTML = "<img src=\"https://cdn-icons-png.flaticon.com/512/148/148764.png\"></img>";
+
+            var DeleteColumnButton = document.createElement("button");
+            DeleteColumnButton.setAttribute("id","DeleteColumnButton");
+            DeleteColumnButton.setAttribute("class","deletebutton");
+            DeleteColumnButton.setAttribute("onclick","deletecolumn()");
+            DeleteColumnButton.innerHTML = "<img src=\"https://cdn4.iconfinder.com/data/icons/essentials-72/24/039_-_Cross-1024.png\">";
+
+            $(document.body).append(DivColumn);
+            $(document.body).append(ParentDiv);
+            $("#ParentDiv").append(table);
+            $(document.body).append(DivRow);
+            $("#DivColumn").append(AddColumnButton, DeleteColumnButton);
+            $("#DivRow").append(AddRowButton, DeleteRowButton);
+
+            //if the page wasnt empty before closing or reloading the saved table will be appended to the website
+
+            if(savedparent != null){
+                $("#maintable").html(savedparent);              //saved div
+                RowNr = savedrownr;                             //saved row number
+                ColumnNr = savedcolumnnr;                       //      column number
+                cellclicker();                                  //call the cellclicker function to make all cells clickable
+            }
+        
+            //Function to create a table after entering rows and columns
+            
+            function submitten() {
+                //get the user-entered values
+                var j = $("#RowIndex").val();                   
+                var l = $("#ColumnIndex").val();
+                addtotable(j,l);
+
+            }
+
+                //if the entered values are valid the following code will add a table with the content
+                
+                function addtotable(j,l) {
+                    if(j>0 && l>0) {
+
+                        for(let i=1;i<=j;i++) {                 //add the numbers of row
+
+                            var headrow = document.createElement('tr');     //headrow always added as an extra
+                            headrow.setAttribute("id","headrow");
+                            headrow.setAttribute("class","headrow");
+                            let row = document.createElement('tr');         //normal row
+                        
+                            //Using a variable to count the already existing rows
+
+                            if(RowNr>0) {                                   //If saved row number is relevant use it to count on
+                                var ActualRowNr = +i + +RowNr;
+                            }
+                            else{
+                                var ActualRowNr = i;
+                            }
+                            row.setAttribute("id","row"+ActualRowNr);
+                            row.setAttribute("class","row");
+
+                            //add the columns for this row
+
+                            for(let k=1;k<=l;k++) {
+                                //if table header doesnt exist add one
+                                
+                                if(TableHeadExist==0 || TableHeadExist){                          
+
+                                    var headcolumn = document.createElement('th');
+                                    headcolumn.setAttribute("class","cells");
+                                    headcolumn.setAttribute("onclick","cell = this.id");
+                                    headcolumn.setAttribute("id", "0"+"x"+k);
+                                    var HeadInputField = document.createElement('textarea');
+                                    HeadInputField.setAttribute("id","InputField"+headcolumn.getAttribute("id"));
+                                    HeadInputField.setAttribute("class","InputField");
+
+                                    let HeadTextField = document.createElement("p");
+                                    HeadTextField.setAttribute("id","TextField"+headcolumn.getAttribute("id"));
+                                    HeadTextField.setAttribute("class","Textfield");
+
+                                    headcolumn.appendChild(HeadInputField);
+                                    headcolumn.appendChild(HeadTextField)
+                                    headrow.appendChild(headcolumn);
+
+                                }
+                            
+                                //create and add columns to row
+
+                                let column = document.createElement('td');
+                                column.setAttribute("class","cells");
+                                column.setAttribute("onclick","cell = this.id");
+                                column.setAttribute("id",ActualRowNr+"x"+k);
+                                
+                                let InputField = document.createElement('textarea');
+                                InputField.setAttribute("id","InputField"+column.getAttribute("id"));
+                                InputField.setAttribute("class","InputField");
+                                
+                                let TextField = document.createElement("p");
+                                TextField.setAttribute("id","TextField"+column.getAttribute("id"));
+                                TextField.setAttribute("class","Textfield");
+                            
+                                column.appendChild(InputField);
+                                column.appendChild(TextField)
+                                row.appendChild(column);
+
+                            }
+                        
+                            $("#TableBody").append(row);            //append the rows to the body of the table
+                            
+                        }
+                        //if header doesnt exist append it too
+                        if(TableHeadExist==0){
+                            $("#TableHead").append(headrow);
+                            TableHeadExist++;
+                        }
+                        $(".InputField").hide();                //hide appended input and textfield
+                        $("p:empty").hide();
+                        RowNr = ActualRowNr;                    //set RowNr to the actual RowNr;
+                        ColumnNr = l;                           
+                        
+                        //set the values in the Inputboxes to empty
+                        
+                        $("#ColumnIndex").val("");
+                        $("#RowIndex").val("");
+                        document.activeElement.blur();
+
+                        populateStorage();                      //update Storage
+                        cellclicker();                          //make new cells clickable
+                
+                    }
+                }
+                
+            
+
+            //Function to add a row
+
+            function addrow() {
+                var j = RowNr;
+                var l = ColumnNr;
+                addtotable(1,l);                //fun fact meine erste function die variablen weitergibt hat mir ungefähr 30 Zeilen code hier gespart
+            }
+            
+
+            //function to add column
+
+            function addcolumn() {
+            
+                var ActualColumnNr = +ColumnNr + 1;
+                var ActualRowNr = RowNr;
+
+                var headcolumn = document.createElement('th');
+                headcolumn.setAttribute("class","cells");
+                headcolumn.setAttribute("onclick","cell = this.id");
+                headcolumn.setAttribute("id", "0"+"x"+ActualColumnNr);
+                var HeadInputField = document.createElement('textarea');
+                HeadInputField.setAttribute("id","InputField"+headcolumn.getAttribute("id"));
+                HeadInputField.setAttribute("class","InputField");
+
+                let HeadTextField = document.createElement("p");
+                HeadTextField.setAttribute("id","TextField"+headcolumn.getAttribute("id"));
+                HeadTextField.setAttribute("class","Textfield");
+
+                headcolumn.appendChild(HeadInputField);
+                headcolumn.appendChild(HeadTextField)
+                headrow.appendChild(headcolumn);
+
+                for(let k=1;k<=RowNr;k++) {
+                    let column = document.createElement('td');
+                    column.setAttribute("id",k+"x"+ActualColumnNr);
+                    column.setAttribute("class","cells");
+                    column.setAttribute("onclick","cell = this.id");
+
+                    let InputField = document.createElement('textarea');
+                    InputField.setAttribute("id","InputField"+column.getAttribute("id"));
+                    InputField.setAttribute("class","InputField");
+
+                    let TextField = document.createElement("p");
+                    TextField.setAttribute("id","TextField"+column.getAttribute("id"));
+                    TextField.setAttribute("class","Textfield");
+
+
+                    column.appendChild(InputField);
+                    column.appendChild(TextField);
+
+                    $("#row"+k).append(column);
+
+                }
+                $(".InputField").hide();
+                ColumnNr++;
+                populateStorage();
+                cellclicker();
+            }
+            
+            
+
+            //function when u click on a cell
+                
+            function cellclicker() {
+                $(".cells").click(function () { 
+                    var ActiveInput = $("#InputField"+cell);
+                    var ActiveValue = $("#TextField"+cell);
+                    var ActiveValueSaved = ActiveValue.text();
+                    ActiveValue.hide();
+                    if(ActiveValueSaved != ""){
+                    ActiveInput.text(ActiveValueSaved);
+                    }
+                    ActiveInput.show();
+                    var offset = $(this).offset();
+                    var originLeft = offset.width;
+                    var originTop = offset.height;
+
+                    ActiveInput.animate({height: "100%", width: "100%"},"fast");
+                    ActiveInput.focus();
+                    
+                    ActiveInput.focusout(function() {
+                        entervalue();
+
+                    });
+
+                });
+            }
+
+            //If u press Enter or click on another Cell
+
+            $(document).keypress(function(event){
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if(keycode == '13'&&event.shiftKey==false){
+                    entervalue();
+                    submitten();
+                }   
+                
+            });
+
+            //function when u enter a value
+
+            function entervalue (){
+                var EnteredValue = $("#TextField"+cell);
+                $(".InputField").css({height: "10%", width: "10%"});
+                EnteredValue.text($("#InputField"+cell).val());
+                EnteredValue.show();
+                $(".InputField").hide();
+                populateStorage();
+            }
+
+
+            //delete functions
+                
+
+            function deletetable() {
+                $("#TableBody").html("");
+                $("#TableHead").html("");
+                RowNr = 0;
+                TableHeadExist = 0;
+                populateStorage();
+            }
+            
+            function deleterow(){
+
+                //delte the clicked row
+                if(cell.substring(0,2) != "0x" || cell == undefined) {
+                    var DeleteRow = $("#"+cell);
+                    DeleteRow.closest(".row").remove();
+                    var GetRowNr = cell.substring(0,1);
+                    console.log(GetRowNr);
+                    var RowChangeBack = cell.slice(2);
+                    console.log(RowChangeBack);
+                    var k = +GetRowNr;
+            
+
+                    for(let i = GetRowNr;i<=RowNr+1;i++) {
+                    
+                        var RowChange = $("#row"+i);
+                            console.log(GetRowChild);
+                            RowChange.attr("id","row"+k);
+
+                            
+                        for(let m = 1;m<=ColumnNr;m++) {
+                            var GetRowChild = $("#"+k+"x"+m);
+                            var GetRowText = $("#TextField"+k+"x"+m);
+                            var GetRowInput = $("#InputField"+k+"x"+m);
+                            console.log(k);
+                            var f = k-1;
+                            GetRowChild.attr("id",f+"x"+m);
+                            GetRowText.attr("id","TextField"+f+"x"+m);
+                            GetRowInput.attr("id","InputField"+f+"x"+m);
+
+
+                        }
+                        k++;
+                    }
+                    RowNr--;
+                    populateStorage();
+                    cellclicker();
+                
+                }
+
+            }
+
+            function deletecolumn(){
+
+                if(cell!= undefined) {         //if cell is chosen
+
+                    //remove the column
+                    var GetColumn = cell.slice(1);
+                    var GetColumnNr = cell.slice(2);
+                    var GetRowOfCell = cell.substring(0,2);
+                    var DeleteColumn = $("td[id$='"+GetColumn+"']");
+                    var DeleteHeadColumn = $("th[id$='"+GetColumn+"']");
+                    DeleteHeadColumn.remove();
+                    DeleteColumn.remove();
+
+                    //set the other columns to the previous one to avoid holes
+                    
+                    for(let i = 0;i<=RowNr;i++) {
+                        k=+GetColumnNr-1;
+                        for(let m=GetColumnNr;m<=ColumnNr;m++) {
+                        var DecreaseColumn = $("#"+i+"x"+m);
+                        var DecreaseInput = $("#InputField"+i+"x"+m);
+                        var DecreaseText = $("#TextField"+i+"x"+m);
+                        
+                        DecreaseColumn.attr("id",i+"x"+k);
+                        DecreaseInput.attr("id","InputField"+i+"x"+k);
+                        DecreaseText.attr("id","TextField"+i+"x"+k);
+                        k++;
+                        }
+                    }
+                    
+
+                    ColumnNr--;
+                    cellclicker();
+                    populateStorage();
+                }
+                
+            }
+
+            function populateStorage() {
+
+                localStorage.setItem('table', document.getElementById("maintable").innerHTML);
+                localStorage.setItem('SavedRowNr', RowNr);
+                localStorage.setItem('SavedTableHeadExist', TableHeadExist);
+                localStorage.setItem('SavedColumnNr', ColumnNr);
+            }
+
+
+        </script>
+    </body>
+</html>
