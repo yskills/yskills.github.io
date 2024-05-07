@@ -22,6 +22,7 @@ export class InputHandler{
             e.key === " "
             ) && this.keys.indexOf(e.key) === -1){
             this.keys.unshift(e.key);
+            console.log(e.key);
         } 
         else if (e.key ==="p") this.game.debug = !this.game.debug;
         else if(e.key === "o") this.game.reset();
@@ -40,6 +41,7 @@ export class InputHandler{
                     e.key === " "
                 )){
                 this.keys.splice(this.keys.indexOf(e.key),1);
+                console.log(e.key);
             }
           
         });
